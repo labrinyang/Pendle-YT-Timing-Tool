@@ -1,0 +1,76 @@
+{
+  "app": {
+    "title": "Pendle"
+  },
+  "header": {
+    "title": "Pendle YT 择时工具・网页版",
+    "plotly": "Plotly",
+    "secureBackend": "安全无后端・直连 API",
+    "github": "Pendle-YT-Timing-Tool",
+    "language": "中文",
+    "theme": "深/浅色",
+    "run": "运行"
+  },
+  "chart": {
+    "noDataAvailable": "暂无图表数据",
+    "ytPrice": "YT 价格",
+    "pointsEarned": "从现在购买到到期可获得的积分",
+    "fairValueCurve": "YT 公平价值曲线",
+    "underlyingCoin": "底层代币",
+    "maximizePointsHint": "在 YT 价格低于公平价值曲线时购买以最大化积分"
+  },
+  "main": {
+    "chain": "链",
+    "market": "市场",
+    "underlyingAmount": "底层代币数量",
+    "pointsPerDay": "积分/天",
+    "pendleMultiplier": "Pendle 倍数",
+    "selectChain": "选择链",
+    "updatingChart": "正在更新图表...",
+    "maturityUTC": "到期时间 (UTC):",
+    "weightedImpliedAPY": "加权隐含年化收益率:",
+    "network": "网络:",
+    "transactionsUnique": "交易数量 (唯一)",
+    "weightedImpliedAPYVolume": "加权隐含年化收益率 (按成交量加权)",
+    "pointsAvailable": "积分 (现在购买可获得的积分)"
+  },
+  "marketSelect": {
+    "loadingMarkets": "正在加载市场...",
+    "selectMarket": "选择市场...",
+    "searchMarkets": "搜索市场...",
+    "noMarketsFound": "未找到市场。"
+  },
+  "modeToggle": {
+    "toggleTheme": "切换主题",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "系统"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "refresh": "刷新",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "close": "关闭",
+    "open": "打开",
+    "yes": "是",
+    "no": "否",
+    "unknown": "未知"
+  },
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  }
+}
