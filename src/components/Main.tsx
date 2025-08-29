@@ -82,7 +82,9 @@ export function From() {
                     time: time.getTime(),
                     ytPrice: ytPrice[index] || 0,
                     points: points[index] || 0,
-
+                    fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
+                };
+            });
 
             setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
