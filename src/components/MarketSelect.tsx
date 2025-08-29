@@ -109,15 +109,15 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-66 p-0">
+                <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)] max-w-sm sm:max-w-md">
                     <Command shouldFilter={false}>
-                        <CommandInput 
+                        <CommandInput
                             placeholder={t('marketSelect.searchMarkets')}
                             className="h-9"
                             value={searchValue}
                             onValueChange={setSearchValue}
                         />
-                        <CommandList>
+                        <CommandList className="max-h-64 overflow-y-auto">
                             <CommandEmpty>{t('marketSelect.noMarketsFound')}</CommandEmpty>
                             <CommandGroup>
                                 {filteredMarkets.map((market) => (
