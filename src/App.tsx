@@ -7,7 +7,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="min-h-screen">
         <Header />
-        <main className="container mx-auto p-8">
+        <main className="container mx-auto p-4 sm:p-8">
           <From />
         </main>
       </div>
