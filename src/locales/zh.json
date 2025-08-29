@@ -17,7 +17,8 @@
     "pointsEarned": "从现在购买到到期可获得的积分",
     "fairValueCurve": "YT 公平价值曲线",
     "underlyingCoin": "底层代币",
-    "maximizePointsHint": "在 YT 价格低于公平价值曲线时购买以最大化积分"
+    "maximizePointsHint": "在 YT 价格低于公平价值曲线时购买以最大化积分",
+    "maturity": "到期时间："
   },
   "main": {
     "chain": "链",

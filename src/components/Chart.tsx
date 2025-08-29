@@ -22,9 +22,10 @@ interface ChartProps {
     marketName: string;
     underlyingAmount: number;
     chainName: string;
+    maturityDate?: Date;
 }
 
-export function Chart({ data, marketName, underlyingAmount, chainName }: ChartProps) {
+export function Chart({ data, marketName, underlyingAmount, chainName, maturityDate }: ChartProps) {
     const { t } = useTranslation();
     
     if (!data || data.length === 0) {
@@ -41,7 +42,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName }: ChartPr
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
             <h3 className="text-lg font-semibold text-center mb-6 text-foreground">
-                {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}]
+                {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
             </h3>
             
             <ResponsiveContainer width="100%" height={400}>

@@ -43,7 +43,7 @@ function formatExpiryTime(expiry: string): string {
         } else {
             return `${dateStr} (Expired)`
         }
-    } catch (error) {
+    } catch {
         return expiry // Return original string if parsing fails
     }
 }
@@ -71,7 +71,7 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
             console.error("Failed to fetch markets:", error)
             setIsLoading(false)
         })
-    }, [selectedChain]) // Add selectedMarket back to dependencies
+    }, [selectedChain, setSelectedMarket]) // Add selectedMarket back to dependencies
 
     const selectedMarketData = markets.find(market => market.address === selectedMarket?.address)
 
@@ -83,7 +83,7 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
     )
 
     return (
-        <div className="w-78">
+        <div className="w-full sm:w-78">
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
