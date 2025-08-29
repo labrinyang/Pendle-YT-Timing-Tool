@@ -64,7 +64,7 @@ function sleep(ms: number): Promise<void> {
 // Get active markets
 export async function getActiveMarkets(
   chainId: number,
-  config?: RequestConfig
+  _config?: RequestConfig
 ): Promise<Market[]> {
   try {
     const url = `${BASE_URL}/v1/${chainId}/markets/active`

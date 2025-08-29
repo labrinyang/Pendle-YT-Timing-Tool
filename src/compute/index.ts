@@ -61,7 +61,7 @@ function compute({transactions, maturity, underlyingAmount, pointsPerDayPerUnder
             points.push(NaN); 
             continue; 
         }
-        const price = Math.pow(1 + iA, h / 8760) - 1;
+        const price = 1 - Math.pow(1 + iA, -h / 8760);
         ytPrice.push(price);
         points.push((1 / price) * h * pph * underlyingAmount * mult);
     }

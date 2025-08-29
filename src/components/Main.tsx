@@ -14,7 +14,7 @@ import { Input } from './ui/input';
 import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
 import { compute } from '@/compute';
-import { Chart } from './Chart';
+import { Chart, type ChartData } from './Chart';
 
 export function From() {
     const { t } = useTranslation();
@@ -23,7 +23,7 @@ export function From() {
     const [underlyingAmount, setUnderlyingAmount] = useState<number>(1500);
     const [pointsPerDay, setPointsPerDay] = useState<number>(1);
     const [pendleMultiplier, setPendleMultiplier] = useState<number>(36);
-    const [chartData, setChartData] = useState<any[]>([]);
+    const [chartData, setChartData] = useState<ChartData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [weightedImplied, setWeightedImplied] = useState<number>(0);
 
@@ -54,13 +54,24 @@ export function From() {
             console.log("res", tTimes, ytPrice, points, computedWeightedImplied, maturityDate);
             
             // Prepare chart data
-            const chartData = tTimes.map((time, index) => ({
-                time: time.toISOString(), // Use ISO string for proper sorting
-                ytPrice: ytPrice[index] || 0,
-                points: points[index] || 0,
-                fairValue: Math.pow(1 + (computedWeightedImplied || 0), (maturityDate.getTime() - time.getTime()) / (1000 * 60 * 60 * 24 * 365)) - 1
-            }));
-            
+            const chartData: ChartData[] = tTimes.map((time, index) => {
+                const minutesToMaturity = (maturityDate.getTime() - time.getTime()) / (1000 * 60);
+                return {
+                    time: time.toISOString(), // Use ISO string for proper sorting
+                    ytPrice: ytPrice[index] || 0,
+                    points: points[index] || 0,
+                    fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
+                };
+            });
+
+            // Extend fair value curve to maturity date
+            chartData.push({
+                time: maturityDate.toISOString(),
+                ytPrice: null,
+                points: null,
+                fairValue: 0
+            });
+
             setChartData(chartData);
         } catch (error) {
             console.error('Chart update failed:', error);
