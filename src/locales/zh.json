@@ -13,8 +13,8 @@
   },
   "chart": {
     "noDataAvailable": "暂无图表数据",
-    "ytPrice": "YT 价格",
-    "pointsEarned": "从现在购买到到期可获得的积分",
+    "yAxisLeft": "YT 价格",
+    "yAxisRight": "获得的积分",
     "fairValueCurve": "YT 公平价值曲线",
     "underlyingCoin": "底层代币",
     "maximizePointsHint": "在 YT 价格低于公平价值曲线时购买以最大化积分",
@@ -33,7 +33,7 @@
     "network": "网络:",
     "transactionsUnique": "交易数量 (唯一)",
     "weightedImpliedAPYVolume": "加权隐含年化收益率 (按成交量加权)",
-    "pointsAvailable": "积分 (现在购买可获得的积分)"
+    "pointsAvailable": "从现在购买到到期可获得的积分"
   },
   "marketSelect": {
     "loadingMarkets": "正在加载市场...",
