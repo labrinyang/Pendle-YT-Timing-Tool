@@ -10,10 +10,10 @@ import {
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 
-interface ChartData {
+export interface ChartData {
     time: string;
-    ytPrice: number;
-    points: number;
+    ytPrice: number | null;
+    points: number | null;
     fairValue: number;
 }
 
@@ -35,20 +35,17 @@ export function Chart({ data, marketName, underlyingAmount, chainName }: ChartPr
         );
     }
 
-                // Format data for Recharts and sort by time
-            const sortedData = data
-                .map((item) => ({
-                    time: new Date(item.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    ytPrice: item.ytPrice,
-                    points: item.points,
-                    fairValue: item.fairValue
-                }))
-                .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    // Format data for Recharts and sort by time
+    const sortedData = data
+        .map((item) => ({
+            time: new Date(item.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            ytPrice: item.ytPrice,
+            points: item.points,
+            fairValue: item.fairValue
+        }))
+        .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-            // Sample data to reduce points for smoother curves
-            const sampleSize = Math.min(100, sortedData.length); // Max 100 points
-            const step = Math.max(1, Math.floor(sortedData.length / sampleSize));
-            const chartData = sortedData.filter((_, index) => index % step === 0);
+    const chartData = sortedData;
 
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
@@ -105,21 +102,25 @@ export function Chart({ data, marketName, underlyingAmount, chainName }: ChartPr
                             color: '#ffffff'
                         }}
                         labelStyle={{ color: '#ffffff' }}
-                        formatter={(value: any, name: string) => {
+                        formatter={(value: number, name: string) => {
                             if (name === t('chart.pointsEarned')) {
-                                const numValue = Number(value);
-                                if (numValue >= 1000000) {
-                                    return [`${(numValue / 1000000).toFixed(2)}M`, name];
-                                } else if (numValue >= 1000) {
-                                    return [`${(numValue / 1000).toFixed(2)}K`, name];
+                                if (!isFinite(value)) {
+                                    return ['', name];
                                 }
-                                return [value, name];
+                                if (value >= 1000000) {
+                                    return [`${(value / 1000000).toFixed(2)}M`, name];
+                                } else if (value >= 1000) {
+                                    return [`${(value / 1000).toFixed(2)}K`, name];
+                                }
+                                return [value.toString(), name];
                             }
                             if (name === t('chart.ytPrice') || name === t('chart.fairValueCurve')) {
-                                const numValue = Number(value);
-                                return [numValue.toFixed(4), name];
+                                if (!isFinite(value)) {
+                                    return ['', name];
+                                }
+                                return [value.toFixed(4), name];
                             }
-                            return [value, name];
+                            return [value.toString(), name];
                         }}
                     />
                     
