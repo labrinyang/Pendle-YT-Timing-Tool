@@ -88,9 +88,14 @@ export function From() {
 
             setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
-            // Use latest points earned value for points available metric
-            const latestPoints = points[points.length - 1];
-            setPointsAvailable(Number.isFinite(latestPoints) ? latestPoints : 0);
+            // Use the latest points earned value from chart data
+            if (txData.length > 0) {
+                const latestEntry = txData.reduce((a, b) => (b.time > a.time ? b : a));
+                const latestPoints = latestEntry.points ?? 0;
+                setPointsAvailable(Number.isFinite(latestPoints) ? latestPoints : 0);
+            } else {
+                setPointsAvailable(0);
+            }
 
         } catch (error) {
             console.error('Chart update failed:', error);
