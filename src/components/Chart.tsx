@@ -60,7 +60,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         stroke="#888888"
                         fontSize={12}
                         tick={{ fill: '#888888' }}
-                        tickFormatter={(value) => new Date(value).toLocaleString('en-US', {
+                        tickFormatter={(value) => new Date(value).toLocaleString(i18n.language === 'zh' ? 'zh-CN' : 'en-US', {
                             month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
@@ -108,6 +108,14 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                             color: '#ffffff'
                         }}
                         labelStyle={{ color: '#ffffff' }}
+                        labelFormatter={(label) => new Date(Number(label)).toLocaleString(i18n.language === 'zh' ? 'zh-CN' : 'en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        })}
                         formatter={(value: number, name: string) => {
                             if (name === t('chart.yAxisRight')) {
                                 if (!isFinite(value)) {
