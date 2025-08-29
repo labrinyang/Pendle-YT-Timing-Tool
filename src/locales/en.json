@@ -1,0 +1,76 @@
+{
+  "app": {
+    "title": "Pendle YT Timing Tool"
+  },
+  "header": {
+    "title": "Pendle YT Timing Tool",
+    "plotly": "Plotly",
+    "secureBackend": "Secure Backend-free · Direct API",
+    "github": "Pendle-YT-Timing-Tool",
+    "language": "中文",
+    "theme": "Dark/Light",
+    "run": "Run"
+  },
+  "chart": {
+    "noDataAvailable": "No data available for chart",
+    "ytPrice": "YT Price",
+    "pointsEarned": "Points earned if bought at this time until maturity",
+    "fairValueCurve": "Fair Value Curve of YT",
+    "underlyingCoin": "underlying coin",
+    "maximizePointsHint": "Buy when YT price is below the fair value curve to maximize points"
+  },
+  "main": {
+    "chain": "Chain",
+    "market": "Market",
+    "underlyingAmount": "Underlying Amount",
+    "pointsPerDay": "Points/Day",
+    "pendleMultiplier": "Pendle Multiplier",
+    "selectChain": "Select a chain",
+    "updatingChart": "Updating chart...",
+    "maturityUTC": "Maturity (UTC):",
+    "weightedImpliedAPY": "Weighted Implied APY:",
+    "network": "Network:",
+    "transactionsUnique": "Transactions (unique)",
+    "weightedImpliedAPYVolume": "Weighted Implied APY (Volume-weighted)",
+    "pointsAvailable": "Points (Points available now upon purchase)"
+  },
+  "marketSelect": {
+    "loadingMarkets": "Loading markets...",
+    "selectMarket": "Select a market...",
+    "searchMarkets": "Search markets...",
+    "noMarketsFound": "No markets found."
+  },
+  "modeToggle": {
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown"
+  },
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  }
+}
