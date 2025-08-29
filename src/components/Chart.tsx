@@ -26,7 +26,7 @@ interface ChartProps {
 }
 
 export function Chart({ data, marketName, underlyingAmount, chainName, maturityDate }: ChartProps) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     
     if (!data || data.length === 0) {
         return (
@@ -46,7 +46,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
             </h3>
             
             <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
                     {/* X Axis - Time */}
@@ -67,7 +67,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                     />
                     
                     {/* Left Y Axis - YT Price */}
-                    <YAxis 
+                    <YAxis
                         yAxisId="left"
                         orientation="left"
                         stroke="#888888"
@@ -75,10 +75,11 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         tick={{ fill: '#888888' }}
                         domain={[0, 'dataMax + 0.01']}
                         tickFormatter={(value) => value.toFixed(4)}
+                        label={{ value: t('chart.yAxisLeft'), angle: -90, position: 'insideLeft', fill: '#888888' }}
                     />
-                    
+
                     {/* Right Y Axis - Points */}
-                    <YAxis 
+                    <YAxis
                         yAxisId="right"
                         orientation="right"
                         stroke="#888888"
@@ -93,6 +94,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                             }
                             return value.toString();
                         }}
+                        label={{ value: t('chart.yAxisRight'), angle: -90, position: 'insideRight', fill: '#888888' }}
                     />
                     
                     <Tooltip 
@@ -104,7 +106,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         }}
                         labelStyle={{ color: '#ffffff' }}
                         formatter={(value: number, name: string) => {
-                            if (name === t('chart.pointsEarned')) {
+                            if (name === t('chart.yAxisRight')) {
                                 if (!isFinite(value)) {
                                     return ['', name];
                                 }
@@ -115,7 +117,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                                 }
                                 return [value.toString(), name];
                             }
-                            if (name === t('chart.ytPrice') || name === t('chart.fairValueCurve')) {
+                            if (name === t('chart.yAxisLeft') || name === t('chart.fairValueCurve')) {
                                 if (!isFinite(value)) {
                                     return ['', name];
                                 }
@@ -140,7 +142,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         stroke="#3b82f6"
                         strokeWidth={1.5}
                         dot={false}
-                        name={t('chart.ytPrice')}
+                        name={t('chart.yAxisLeft')}
                     />
                     
                     {/* Points Line - Orange */}
@@ -151,7 +153,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         stroke="#f97316"
                         strokeWidth={1.5}
                         dot={false}
-                        name={t('chart.pointsEarned')}
+                        name={t('chart.yAxisRight')}
                     />
                     
                     {/* Fair Value Curve - Green Dotted */}

@@ -13,8 +13,8 @@
   },
   "chart": {
     "noDataAvailable": "No data available for chart",
-    "ytPrice": "YT Price",
-    "pointsEarned": "Points earned if bought at this time until maturity",
+    "yAxisLeft": "YT Price",
+    "yAxisRight": "Points earned",
     "fairValueCurve": "Fair Value Curve of YT",
     "underlyingCoin": "underlying coin",
     "maximizePointsHint": "Buy when YT price is below the fair value curve to maximize points",
@@ -33,7 +33,7 @@
     "network": "Network:",
     "transactionsUnique": "Transactions (unique)",
     "weightedImpliedAPYVolume": "Weighted Implied APY (Volume-weighted)",
-    "pointsAvailable": "Points (Points available now upon purchase)"
+    "pointsAvailable": "Points earned if bought now until maturity"
   },
   "marketSelect": {
     "loadingMarkets": "Loading markets...",

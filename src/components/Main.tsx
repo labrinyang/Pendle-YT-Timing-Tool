@@ -88,12 +88,9 @@ export function From() {
 
             setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
-            // Compute points available if buying now
-            const hoursToMaturityNow = (computedMaturity.getTime() - now.getTime()) / 3600000;
-            const priceNow = 1 - Math.pow(1 + (computedWeightedImplied || 0), -hoursToMaturityNow / 8760);
-            const pph = pointsPerDay / 24;
-            const pointsNow = (1 / priceNow) * hoursToMaturityNow * pph * underlyingAmount * pendleMultiplier;
-            setPointsAvailable(pointsNow);
+            // Use latest points earned value for points available metric
+            const latestPoints = points[points.length - 1];
+            setPointsAvailable(Number.isFinite(latestPoints) ? latestPoints : 0);
 
         } catch (error) {
             console.error('Chart update failed:', error);
@@ -119,11 +116,11 @@ export function From() {
         }
     }, [selectedMarket, updateChart]);
 
-    return (  
-        <div className='space-y-8'>
+    return (
+        <div className='container mx-auto px-4 pt-24 space-y-8'>
             <div className='bg-card card-elevated rounded-lg p-6'>
-                <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-wrap'>
-                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div className='flex flex-col space-y-2'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
                         <SelectTrigger className="w-full input-enhanced">
@@ -139,11 +136,12 @@ export function From() {
                     </Select>
                 </div>
 
-                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
+                <div className='flex flex-col space-y-2'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.market')}</label>
                     <MarketSelect selectedChain={selectedChain} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} />
                 </div>
-                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
+
+                <div className='flex flex-col space-y-2'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.underlyingAmount')}</label>
                     <Input
                         type="number"
@@ -154,7 +152,8 @@ export function From() {
                         min="0"
                     />
                 </div>
-                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
+
+                <div className='flex flex-col space-y-2'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
                     <Input
                         type="number"
@@ -165,7 +164,8 @@ export function From() {
                         min="0"
                     />
                 </div>
-                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
+
+                <div className='flex flex-col space-y-2'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pendleMultiplier')}</label>
                     <Input
                         type="number"
