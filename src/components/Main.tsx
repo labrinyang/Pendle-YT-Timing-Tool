@@ -126,7 +126,7 @@ export function From() {
                 <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
-                        <SelectTrigger className="w-full sm:w-48 input-enhanced">
+                        <SelectTrigger className="w-full input-enhanced">
                             <SelectValue placeholder={t('main.selectChain')} />
                         </SelectTrigger>
                         <SelectContent>
@@ -150,7 +150,7 @@ export function From() {
                         value={underlyingAmount}
                         onChange={(e) => setUnderlyingAmount(Number(e.target.value))}
                         placeholder="1500"
-                        className="w-full sm:w-40 input-enhanced"
+                        className="w-full input-enhanced"
                         min="0"
                     />
                 </div>
@@ -161,7 +161,7 @@ export function From() {
                         value={pointsPerDay}
                         onChange={(e) => setPointsPerDay(Number(e.target.value))}
                         placeholder="1"
-                        className="w-full sm:w-40 input-enhanced"
+                        className="w-full input-enhanced"
                         min="0"
                     />
                 </div>
@@ -172,7 +172,7 @@ export function From() {
                         value={pendleMultiplier}
                         onChange={(e) => setPendleMultiplier(Number(e.target.value))}
                         placeholder="36"
-                        className="w-full sm:w-40 input-enhanced"
+                        className="w-full input-enhanced"
                         min="0"
                     />
                 </div>
