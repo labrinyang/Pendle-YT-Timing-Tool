@@ -97,8 +97,10 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
                             ? t('marketSelect.loadingMarkets')
                             : selectedMarketData 
                                 ? <div className="flex items-center justify-between w-full">
-                                    <span className="font-medium">{selectedMarketData.name}</span>
-                                    <span className="text-xs text-muted-foreground ml-2">
+                                    <div className="flex-1 min-w-0">
+                                        <span className="font-medium truncate">{selectedMarketData.name}</span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
                                         {formatExpiryTime(selectedMarketData.expiry)}
                                     </span>
                                 </div>
