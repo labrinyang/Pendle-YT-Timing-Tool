@@ -9,6 +9,7 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
+import { useWindowSize } from '../hooks/use-window-size';
 
 export interface ChartData {
     time: number;
@@ -27,6 +28,8 @@ interface ChartProps {
 
 export function Chart({ data, marketName, underlyingAmount, chainName, maturityDate }: ChartProps) {
     const { t, i18n } = useTranslation();
+    const { width } = useWindowSize();
+    const isMobile = width < 640;
     
     if (!data || data.length === 0) {
         return (
@@ -45,7 +48,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                 {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
             </h3>
             
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
                 <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
