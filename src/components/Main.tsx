@@ -42,9 +42,8 @@ export function From() {
         setIsLoading(true);
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
-            console.log(txs);
 
-            const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: maturityFromCompute } = compute({
+            const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: computedMaturity } = compute({
                 transactions: txs,
                 maturity: selectedMarket.expiry,
                 underlyingAmount,
@@ -53,15 +52,14 @@ export function From() {
             });
 
             setWeightedImplied(computedWeightedImplied || 0);
-            setMaturityDate(maturityFromCompute);
-            console.log("res", tTimes, ytPrice, points, computedWeightedImplied, maturityFromCompute);
+            setMaturityDate(computedMaturity);
 
             // Generate fair value curve using current weighted implied APY
             const now = new Date();
             const fairCurvePoints = 50; // number of points to render the straight line
             const fairCurve: ChartData[] = Array.from({ length: fairCurvePoints }, (_, i) => {
-                const time = new Date(now.getTime() + (maturityFromCompute.getTime() - now.getTime()) * (i / (fairCurvePoints - 1)));
-                const minutesToMaturity = (maturityFromCompute.getTime() - time.getTime()) / (1000 * 60);
+                const time = new Date(now.getTime() + (computedMaturity.getTime() - now.getTime()) * (i / (fairCurvePoints - 1)));
+                const minutesToMaturity = (computedMaturity.getTime() - time.getTime()) / (1000 * 60);
                 return {
                     time: time.getTime(),
                     ytPrice: null,
@@ -72,7 +70,7 @@ export function From() {
 
             // Include actual transaction data for YT price and points
             const txData: ChartData[] = tTimes.map((time, index) => {
-                const minutesToMaturity = (maturityFromCompute.getTime() - time.getTime()) / (1000 * 60);
+                const minutesToMaturity = (computedMaturity.getTime() - time.getTime()) / (1000 * 60);
                 return {
                     time: time.getTime(),
                     ytPrice: ytPrice[index] || 0,
@@ -84,7 +82,7 @@ export function From() {
             setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
             // Compute points available if buying now
-            const hoursToMaturityNow = (maturityFromCompute.getTime() - now.getTime()) / 3600000;
+            const hoursToMaturityNow = (computedMaturity.getTime() - now.getTime()) / 3600000;
             const priceNow = 1 - Math.pow(1 + (computedWeightedImplied || 0), -hoursToMaturityNow / 8760);
             const pph = pointsPerDay / 24;
             const pointsNow = (1 / priceNow) * hoursToMaturityNow * pph * underlyingAmount * pendleMultiplier;
