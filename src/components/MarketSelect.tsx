@@ -83,7 +83,7 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
     )
 
     return (
-        <div className="w-full sm:w-78">
+        <div className="w-full flex-1 sm:max-w-xs">
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
