@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
 import {
@@ -34,14 +34,14 @@ export function From() {
 
 
     // Auto-update function
-    const updateChart = async () => {
+    const updateChart = useCallback(async () => {
         if (!selectedMarket) return;
-        
+
         setIsLoading(true);
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
             console.log(txs);
-            
+
             const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate } = compute({
                 transactions: txs,
                 maturity: selectedMarket.expiry,
@@ -49,43 +49,49 @@ export function From() {
                 pointsPerDayPerUnderlying: pointsPerDay,
                 multiplier: pendleMultiplier
             });
-            
+
             setWeightedImplied(computedWeightedImplied || 0);
             console.log("res", tTimes, ytPrice, points, computedWeightedImplied, maturityDate);
-            
-            // Prepare chart data
-            const chartData: ChartData[] = tTimes.map((time, index) => {
+
+            // Generate fair value curve using current weighted implied APY
+            const now = new Date();
+            const fairCurvePoints = 50; // number of points to render the straight line
+            const fairCurve: ChartData[] = Array.from({ length: fairCurvePoints }, (_, i) => {
+                const time = new Date(now.getTime() + (maturityDate.getTime() - now.getTime()) * (i / (fairCurvePoints - 1)));
                 const minutesToMaturity = (maturityDate.getTime() - time.getTime()) / (1000 * 60);
                 return {
-                    time: time.toISOString(), // Use ISO string for proper sorting
+                    time: time.getTime(),
+                    ytPrice: null,
+                    points: null,
+                    fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
+                };
+            });
+
+            // Include actual transaction data for YT price and points
+            const txData: ChartData[] = tTimes.map((time, index) => {
+                const minutesToMaturity = (maturityDate.getTime() - time.getTime()) / (1000 * 60);
+                return {
+                    time: time.getTime(),
                     ytPrice: ytPrice[index] || 0,
                     points: points[index] || 0,
                     fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
                 };
             });
 
-            // Extend fair value curve to maturity date
-            chartData.push({
-                time: maturityDate.toISOString(),
-                ytPrice: null,
-                points: null,
-                fairValue: 0
-            });
-
-            setChartData(chartData);
+            setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
         } catch (error) {
             console.error('Chart update failed:', error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
     // Auto-update when market is selected (immediate)
     useEffect(() => {
         if (selectedMarket) {
             updateChart();
         }
-    }, [selectedMarket]);
+    }, [selectedMarket, updateChart]);
 
     // Auto-update when inputs change (debounced)
     useEffect(() => {
@@ -95,7 +101,7 @@ export function From() {
             }, 500);
             return () => clearTimeout(timeoutId);
         }
-    }, [underlyingAmount, pointsPerDay, pendleMultiplier, selectedChain]);
+    }, [selectedMarket, updateChart]);
 
     return (  
         <div className='space-y-8'>
