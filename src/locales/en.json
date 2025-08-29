@@ -17,7 +17,8 @@
     "pointsEarned": "Points earned if bought at this time until maturity",
     "fairValueCurve": "Fair Value Curve of YT",
     "underlyingCoin": "underlying coin",
-    "maximizePointsHint": "Buy when YT price is below the fair value curve to maximize points"
+    "maximizePointsHint": "Buy when YT price is below the fair value curve to maximize points",
+    "maturity": "Maturity:"
   },
   "main": {
     "chain": "Chain",

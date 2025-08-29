@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
 import {
@@ -26,6 +26,8 @@ export function From() {
     const [chartData, setChartData] = useState<ChartData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [weightedImplied, setWeightedImplied] = useState<number>(0);
+    const [pointsAvailable, setPointsAvailable] = useState<number>(0);
+    const [maturityDate, setMaturityDate] = useState<Date | null>(null);
 
     const handleChainChange = (value: string) => {
         setSelectedChain(value);
@@ -34,58 +36,72 @@ export function From() {
 
 
     // Auto-update function
-    const updateChart = async () => {
+    const updateChart = useCallback(async () => {
         if (!selectedMarket) return;
-        
+
         setIsLoading(true);
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
             console.log(txs);
-            
-            const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate } = compute({
+
+            const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: maturityFromCompute } = compute({
                 transactions: txs,
                 maturity: selectedMarket.expiry,
                 underlyingAmount,
                 pointsPerDayPerUnderlying: pointsPerDay,
                 multiplier: pendleMultiplier
             });
-            
+
             setWeightedImplied(computedWeightedImplied || 0);
-            console.log("res", tTimes, ytPrice, points, computedWeightedImplied, maturityDate);
-            
-            // Prepare chart data
-            const chartData: ChartData[] = tTimes.map((time, index) => {
-                const minutesToMaturity = (maturityDate.getTime() - time.getTime()) / (1000 * 60);
+            setMaturityDate(maturityFromCompute);
+            console.log("res", tTimes, ytPrice, points, computedWeightedImplied, maturityFromCompute);
+
+            // Generate fair value curve using current weighted implied APY
+            const now = new Date();
+            const fairCurvePoints = 50; // number of points to render the straight line
+            const fairCurve: ChartData[] = Array.from({ length: fairCurvePoints }, (_, i) => {
+                const time = new Date(now.getTime() + (maturityFromCompute.getTime() - now.getTime()) * (i / (fairCurvePoints - 1)));
+                const minutesToMaturity = (maturityFromCompute.getTime() - time.getTime()) / (1000 * 60);
                 return {
-                    time: time.toISOString(), // Use ISO string for proper sorting
+                    time: time.getTime(),
+                    ytPrice: null,
+                    points: null,
+                    fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
+                };
+            });
+
+            // Include actual transaction data for YT price and points
+            const txData: ChartData[] = tTimes.map((time, index) => {
+                const minutesToMaturity = (maturityFromCompute.getTime() - time.getTime()) / (1000 * 60);
+                return {
+                    time: time.getTime(),
                     ytPrice: ytPrice[index] || 0,
                     points: points[index] || 0,
                     fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
                 };
             });
 
-            // Extend fair value curve to maturity date
-            chartData.push({
-                time: maturityDate.toISOString(),
-                ytPrice: null,
-                points: null,
-                fairValue: 0
-            });
+            setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
-            setChartData(chartData);
+            // Compute points available if buying now
+            const hoursToMaturityNow = (maturityFromCompute.getTime() - now.getTime()) / 3600000;
+            const priceNow = 1 - Math.pow(1 + (computedWeightedImplied || 0), -hoursToMaturityNow / 8760);
+            const pph = pointsPerDay / 24;
+            const pointsNow = (1 / priceNow) * hoursToMaturityNow * pph * underlyingAmount * pendleMultiplier;
+            setPointsAvailable(pointsNow);
         } catch (error) {
             console.error('Chart update failed:', error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
     // Auto-update when market is selected (immediate)
     useEffect(() => {
         if (selectedMarket) {
             updateChart();
         }
-    }, [selectedMarket]);
+    }, [selectedMarket, updateChart]);
 
     // Auto-update when inputs change (debounced)
     useEffect(() => {
@@ -95,16 +111,16 @@ export function From() {
             }, 500);
             return () => clearTimeout(timeoutId);
         }
-    }, [underlyingAmount, pointsPerDay, pendleMultiplier, selectedChain]);
+    }, [selectedMarket, updateChart]);
 
     return (  
         <div className='space-y-8'>
             <div className='bg-card card-elevated rounded-lg p-6'>
-                <div className='flex items-center gap-4 flex-wrap'>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-wrap'>
+                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
-                        <SelectTrigger className="w-48 input-enhanced">
+                        <SelectTrigger className="w-full sm:w-48 input-enhanced">
                             <SelectValue placeholder={t('main.selectChain')} />
                         </SelectTrigger>
                         <SelectContent>
@@ -116,41 +132,41 @@ export function From() {
                         </SelectContent>
                     </Select>
                 </div>
-                
-                <div className='flex flex-col space-y-2'>
+
+                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.market')}</label>
                     <MarketSelect selectedChain={selectedChain} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} />
                 </div>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.underlyingAmount')}</label>
                     <Input
                         type="number"
                         value={underlyingAmount}
                         onChange={(e) => setUnderlyingAmount(Number(e.target.value))}
                         placeholder="1500"
-                        className="w-40 input-enhanced"
+                        className="w-full sm:w-40 input-enhanced"
                         min="0"
                     />
                 </div>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
                     <Input
                         type="number"
                         value={pointsPerDay}
                         onChange={(e) => setPointsPerDay(Number(e.target.value))}
                         placeholder="1"
-                        className="w-40 input-enhanced"
+                        className="w-full sm:w-40 input-enhanced"
                         min="0"
                     />
                 </div>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 flex-1 min-w-[8rem]'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pendleMultiplier')}</label>
                     <Input
                         type="number"
                         value={pendleMultiplier}
                         onChange={(e) => setPendleMultiplier(Number(e.target.value))}
                         placeholder="36"
-                        className="w-40 input-enhanced"
+                        className="w-full sm:w-40 input-enhanced"
                         min="0"
                     />
                 </div>
@@ -190,7 +206,7 @@ export function From() {
                         
                         {/* Metrics Section */}
                         {chartData.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                 <div className="bg-muted/50 card-subtle p-4 rounded-lg">
                                     <div className="text-sm text-muted-foreground mb-2">{t('main.transactionsUnique')}</div>
                                     <div className="text-2xl font-bold">{chartData.length.toLocaleString()}</div>
@@ -202,7 +218,7 @@ export function From() {
                                 <div className="bg-muted/50 card-subtle p-4 rounded-lg">
                                     <div className="text-sm text-muted-foreground mb-2">{t('main.pointsAvailable')}</div>
                                     <div className="text-2xl font-bold">
-                                        {chartData.length > 0 ? chartData[chartData.length - 1]?.points?.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0'}
+                                        {pointsAvailable.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                     </div>
                                 </div>
                             </div>
@@ -214,11 +230,12 @@ export function From() {
             {/* Chart Display */}
             {chartData.length > 0 && selectedMarket && (
                 <div className="mt-8">
-                    <Chart 
+                    <Chart
                         data={chartData}
                         marketName={selectedMarket.name}
                         underlyingAmount={underlyingAmount}
                         chainName={chainsArray.find(chain => chain.chainId.toString() === selectedChain)?.name || t('common.unknown')}
+                        maturityDate={maturityDate ?? undefined}
                     />
                 </div>
             )}

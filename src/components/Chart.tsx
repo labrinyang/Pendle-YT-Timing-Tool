@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 export interface ChartData {
-    time: string;
+    time: number;
     ytPrice: number | null;
     points: number | null;
     fairValue: number;
@@ -22,9 +22,10 @@ interface ChartProps {
     marketName: string;
     underlyingAmount: number;
     chainName: string;
+    maturityDate?: Date;
 }
 
-export function Chart({ data, marketName, underlyingAmount, chainName }: ChartProps) {
+export function Chart({ data, marketName, underlyingAmount, chainName, maturityDate }: ChartProps) {
     const { t } = useTranslation();
     
     if (!data || data.length === 0) {
@@ -35,22 +36,13 @@ export function Chart({ data, marketName, underlyingAmount, chainName }: ChartPr
         );
     }
 
-    // Format data for Recharts and sort by time
-    const sortedData = data
-        .map((item) => ({
-            time: new Date(item.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            ytPrice: item.ytPrice,
-            points: item.points,
-            fairValue: item.fairValue
-        }))
-        .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-
-    const chartData = sortedData;
+    // Sort data by timestamp to ensure proper ordering
+    const chartData = [...data].sort((a, b) => a.time - b.time);
 
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
             <h3 className="text-lg font-semibold text-center mb-6 text-foreground">
-                {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}]
+                {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
             </h3>
             
             <ResponsiveContainer width="100%" height={400}>
@@ -58,11 +50,20 @@ export function Chart({ data, marketName, underlyingAmount, chainName }: ChartPr
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
                     {/* X Axis - Time */}
-                    <XAxis 
-                        dataKey="time" 
+                    <XAxis
+                        dataKey="time"
+                        type="number"
+                        domain={['dataMin', 'dataMax']}
                         stroke="#888888"
                         fontSize={12}
                         tick={{ fill: '#888888' }}
+                        tickFormatter={(value) => new Date(value).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        })}
                     />
                     
                     {/* Left Y Axis - YT Price */}
