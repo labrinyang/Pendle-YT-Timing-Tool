@@ -43,7 +43,9 @@ export function From() {
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
 
+
             const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: computedMaturity } = compute({
+
                 transactions: txs,
                 maturity: selectedMarket.expiry,
                 underlyingAmount,
@@ -52,18 +54,23 @@ export function From() {
             });
 
             setWeightedImplied(computedWeightedImplied || 0);
+
             setMaturityDate(computedMaturity);
+
 
             // Generate fair value curve using current weighted implied APY
             const now = new Date();
             const fairCurvePoints = 50; // number of points to render the straight line
             const fairCurve: ChartData[] = Array.from({ length: fairCurvePoints }, (_, i) => {
+
                 const time = new Date(now.getTime() + (computedMaturity.getTime() - now.getTime()) * (i / (fairCurvePoints - 1)));
                 const minutesToMaturity = (computedMaturity.getTime() - time.getTime()) / (1000 * 60);
+
                 return {
                     time: time.getTime(),
                     ytPrice: null,
                     points: null,
+
                     fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
                 };
             });
@@ -75,9 +82,7 @@ export function From() {
                     time: time.getTime(),
                     ytPrice: ytPrice[index] || 0,
                     points: points[index] || 0,
-                    fairValue: 1 - Math.pow(1 + (computedWeightedImplied || 0), -minutesToMaturity / (365 * 24 * 60))
-                };
-            });
+
 
             setChartData([...fairCurve, ...txData].sort((a, b) => a.time - b.time));
 
@@ -87,6 +92,7 @@ export function From() {
             const pph = pointsPerDay / 24;
             const pointsNow = (1 / priceNow) * hoursToMaturityNow * pph * underlyingAmount * pendleMultiplier;
             setPointsAvailable(pointsNow);
+
         } catch (error) {
             console.error('Chart update failed:', error);
         } finally {
