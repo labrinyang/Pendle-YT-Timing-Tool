@@ -43,7 +43,7 @@ export const chains: { [chainId: number]: Chain } = {
         explorerUrl: 'https://basescan.org',
     },
     84532: {
-        name: 'HyperEVM',
+        name: 'Hyper EVM',
         chainId: 84532,
         rpcUrl: 'https://hyperevm-rpc.com',
         explorerUrl: 'https://hyperevm-explorer.com',

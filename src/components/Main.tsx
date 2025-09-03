@@ -31,6 +31,7 @@ export function From() {
 
     const handleChainChange = (value: string) => {
         setSelectedChain(value);
+        setSelectedMarket(null);
     };
 
 

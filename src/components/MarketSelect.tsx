@@ -60,18 +60,21 @@ export function MarketSelect(props: {selectedChain: string, selectedMarket: Mark
     React.useEffect(() => {
         setIsLoading(true)
         getActiveMarkets(Number(selectedChain)).then((d) => {
-            console.log("markets", d)
             setMarkets(d)
             // Auto-select the first market when chain changes or when no market is selected
             if (d.length > 0) {
                 setSelectedMarket(d[0])
+            } else {
+                setSelectedMarket(null)
             }
             setIsLoading(false)
         }).catch((error) => {
             console.error("Failed to fetch markets:", error)
+            setMarkets([])
+            setSelectedMarket(null)
             setIsLoading(false)
         })
-    }, [selectedChain, setSelectedMarket]) // Add selectedMarket back to dependencies
+    }, [selectedChain, setSelectedMarket])
 
     const selectedMarketData = markets.find(market => market.address === selectedMarket?.address)
 
