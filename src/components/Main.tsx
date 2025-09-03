@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
 import {
@@ -10,6 +10,7 @@ import {
 } from './ui/select';
 import { MarketSelect } from './MarketSelect';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
@@ -38,7 +39,7 @@ export function From() {
 
 
 
-    // Auto-update function
+    // Update chart data
     const updateChart = useCallback(async () => {
         if (!selectedMarket) return;
 
@@ -139,23 +140,6 @@ export function From() {
         }
     }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
-    // Auto-update when market is selected (immediate)
-    useEffect(() => {
-        if (selectedMarket) {
-            updateChart();
-        }
-    }, [selectedMarket, updateChart]);
-
-    // Auto-update when inputs change (debounced)
-    useEffect(() => {
-        if (selectedMarket) {
-            const timeoutId = setTimeout(() => {
-                updateChart();
-            }, 500);
-            return () => clearTimeout(timeoutId);
-        }
-    }, [selectedMarket, updateChart]);
-
     return (
         <div className='container mx-auto px-4 pt-16 sm:pt-24 space-y-8'>
             <div className='bg-card card-elevated rounded-lg p-4 sm:p-6'>
@@ -217,9 +201,17 @@ export function From() {
                     />
                 </div>
 
+                </div>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        onClick={updateChart}
+                        disabled={!selectedMarket || isLoading}
+                        className="input-enhanced">
+                        {t('main.run')}
+                    </Button>
+                </div>
             </div>
-            </div>
-            
+
             {/* Loading Indicator */}
             {isLoading && (
                 <div className="mt-4 text-center">

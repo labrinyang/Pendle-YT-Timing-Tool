@@ -37,7 +37,8 @@
     "network": "网络:",
     "transactionsUnique": "交易数量 (唯一)",
     "weightedImpliedAPYVolume": "加权隐含年化收益率 (按成交量加权)",
-    "pointsAvailable": "从现在购买到到期可获得的积分"
+    "pointsAvailable": "从现在购买到到期可获得的积分",
+    "run": "运行"
   },
   "marketSelect": {
     "loadingMarkets": "正在加载市场...",

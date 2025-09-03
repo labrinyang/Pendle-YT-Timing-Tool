@@ -37,7 +37,8 @@
     "network": "Network:",
     "transactionsUnique": "Transactions (unique)",
     "weightedImpliedAPYVolume": "Weighted Implied APY (Volume-weighted)",
-    "pointsAvailable": "Points earned if bought now until maturity"
+    "pointsAvailable": "Points earned if bought now until maturity",
+    "run": "Run"
   },
   "marketSelect": {
     "loadingMarkets": "Loading markets...",
