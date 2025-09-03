@@ -34,7 +34,7 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm">
       {/* Centered container to align with main content */}
       <div className="mx-auto w-full max-w-screen-xl px-4 py-2 sm:px-6 sm:py-3">
-        <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Left side - Title and badges */}
           <div className="flex items-center gap-4 min-w-0">
             {/* Pendle logo */}
@@ -63,8 +63,8 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right side - Action buttons */}
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-2 sm:gap-4 min-w-0">
-            <div className="hidden md:flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 min-w-0">
+            <div className="hidden lg:flex items-center gap-2 lg:gap-4 min-w-0">
               {/* GitHub button */}
               <Button
                 variant="outline"
@@ -85,7 +85,7 @@ const Header: React.FC = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden input-enhanced"
+                  className="lg:hidden input-enhanced"
                 >
                   <Menu className="w-5 h-5" />
                   <span className="sr-only">{t('header.menu')}</span>
