@@ -7,8 +7,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="min-h-screen">
         <Header />
-        {/* Removed extra container to align header and content widths */}
-        <main className="py-4 sm:py-8">
+        <main>
           <Main />
         </main>
       </div>
