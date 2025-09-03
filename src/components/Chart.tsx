@@ -30,6 +30,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
     const { t, i18n } = useTranslation();
     const { width } = useWindowSize();
     const isMobile = width < 640;
+    const chartHeight = isMobile ? Math.min(480, Math.max(320, width * 0.9)) : 400;
     
     if (!data || data.length === 0) {
         return (
@@ -48,7 +49,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                 {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
             </h3>
             
-            <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
+            <ResponsiveContainer width="100%" height={chartHeight}>
                 <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
@@ -100,14 +101,15 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         label={{ value: t('chart.yAxisRight'), angle: -90, position: 'insideRight', fill: '#888888' }}
                     />
                     
-                    <Tooltip 
-                        contentStyle={{ 
-                            backgroundColor: '#1f2937', 
+                    <Tooltip
+                        contentStyle={{
+                            backgroundColor: '#1f2937',
                             border: '1px solid #374151',
                             borderRadius: '8px',
                             color: '#ffffff'
                         }}
                         labelStyle={{ color: '#ffffff' }}
+                        labelFormatter={(value) => new Date(value).toLocaleString()}
                         formatter={(value: number, name: string) => {
                             if (name === t('chart.yAxisRight')) {
                                 if (!isFinite(value)) {
