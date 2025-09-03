@@ -19,7 +19,10 @@
     "fairValueCurve": "Fair Value Curve of YT",
     "underlyingCoin": "underlying coin",
     "maximizePointsHint": "Buy when YT price is below the fair value curve to maximize points",
-    "maturity": "Maturity:"
+    "maturity": "Maturity:",
+    "volumeDistributionTitle": "Volume distribution by implied APY",
+    "impliedApy": "Implied APY (%)",
+    "volume": "Volume (USD)"
   },
   "main": {
     "chain": "Chain",
