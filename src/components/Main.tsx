@@ -46,19 +46,38 @@ export function From() {
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
 
-            const volumeMap = new Map<number, number>();
+            // Build implied APY histogram automatically
+            const apyVolPairs: { apy: number; vol: number }[] = [];
             for (const tx of txs) {
-                const apy = Number(tx?.impliedApy);
+                const apy = Number(tx?.impliedApy) * 100; // convert to percentage
                 const vol = Number(tx?.valuation?.usd ?? tx?.valuation_usd);
                 if (isFinite(apy) && isFinite(vol)) {
-                    const key = Math.round(apy * 100) / 100;
-                    volumeMap.set(key, (volumeMap.get(key) ?? 0) + vol);
+                    apyVolPairs.push({ apy, vol });
                 }
             }
-            const distData = Array.from(volumeMap.entries())
-                .sort((a, b) => a[0] - b[0])
-                .map(([apy, vol]) => ({ impliedApy: apy * 100, volume: vol }));
-            setVolumeDistribution(distData);
+
+            if (apyVolPairs.length > 0) {
+                const apyValues = apyVolPairs.map((p) => p.apy);
+                const minApy = Math.min(...apyValues);
+                const maxApy = Math.max(...apyValues);
+                const binCount = Math.min(20, Math.ceil(Math.log2(apyVolPairs.length)) + 1); // Sturges' formula capped at 20
+                const range = maxApy - minApy;
+                const binSize = range === 0 ? 1 : range / binCount;
+                const bins = Array.from({ length: binCount }, (_, i) => ({
+                    impliedApy: minApy + (i + 0.5) * binSize,
+                    volume: 0,
+                }));
+                for (const { apy, vol } of apyVolPairs) {
+                    const index = range === 0 ? 0 : Math.min(binCount - 1, Math.floor((apy - minApy) / binSize));
+                    bins[index].volume += vol;
+                }
+                const distData = bins
+                    .filter((b) => b.volume > 0)
+                    .map((b) => ({ impliedApy: Number(b.impliedApy.toFixed(2)), volume: b.volume }));
+                setVolumeDistribution(distData);
+            } else {
+                setVolumeDistribution([]);
+            }
 
             const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: computedMaturity } = compute({
 
