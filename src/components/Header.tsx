@@ -31,8 +31,8 @@ const Header: React.FC = () => {
   const nextLanguage = i18n.language === 'zh' ? 'en' : 'zh';
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm">
-      <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-4">
+    <header className="sticky top-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm mx-auto w-full max-w-screen-xl">
+      <div className="px-4 py-2 sm:px-6 sm:py-3">
         <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
           {/* Left side - Title and badges */}
           <div className="flex items-center gap-4 min-w-0">
