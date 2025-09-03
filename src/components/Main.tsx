@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
 import {
@@ -10,6 +10,7 @@ import {
 } from './ui/select';
 import { MarketSelect } from './MarketSelect';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
@@ -17,7 +18,7 @@ import { compute } from '@/compute';
 import { Chart, type ChartData } from './Chart';
 import { VolumeDistributionChart, type VolumeDistributionData } from './VolumeDistributionChart';
 
-export function From() {
+export function Main() {
     const { t } = useTranslation();
     const [selectedChain, setSelectedChain] = useState<string>(chainsArray[0]?.chainId.toString() || "1");
     const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
@@ -38,7 +39,7 @@ export function From() {
 
 
 
-    // Auto-update function
+    // Update chart data
     const updateChart = useCallback(async () => {
         if (!selectedMarket) return;
 
@@ -139,28 +140,11 @@ export function From() {
         }
     }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
-    // Auto-update when market is selected (immediate)
-    useEffect(() => {
-        if (selectedMarket) {
-            updateChart();
-        }
-    }, [selectedMarket, updateChart]);
-
-    // Auto-update when inputs change (debounced)
-    useEffect(() => {
-        if (selectedMarket) {
-            const timeoutId = setTimeout(() => {
-                updateChart();
-            }, 500);
-            return () => clearTimeout(timeoutId);
-        }
-    }, [selectedMarket, updateChart]);
-
     return (
         <div className='container mx-auto px-4 pt-16 sm:pt-24 space-y-8'>
             <div className='bg-card card-elevated rounded-lg p-4 sm:p-6'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
                         <SelectTrigger className="w-full input-enhanced">
@@ -176,12 +160,12 @@ export function From() {
                     </Select>
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.market')}</label>
                     <MarketSelect selectedChain={selectedChain} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.underlyingAmount')}</label>
                     <Input
                         type="number"
@@ -193,7 +177,7 @@ export function From() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
                     <Input
                         type="number"
@@ -205,7 +189,7 @@ export function From() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pendleMultiplier')}</label>
                     <Input
                         type="number"
@@ -217,9 +201,17 @@ export function From() {
                     />
                 </div>
 
+                </div>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        onClick={updateChart}
+                        disabled={!selectedMarket || isLoading}
+                        className="w-full sm:w-auto input-enhanced">
+                        {t('main.run')}
+                    </Button>
+                </div>
             </div>
-            </div>
-            
+
             {/* Loading Indicator */}
             {isLoading && (
                 <div className="mt-4 text-center">

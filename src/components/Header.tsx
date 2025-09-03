@@ -13,7 +13,7 @@ import {
   DropdownMenuSubContent,
 } from './ui/dropdown-menu';
 import { Menu } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '@/hooks/theme-context';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();

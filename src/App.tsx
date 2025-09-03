@@ -1,4 +1,4 @@
-import { From } from './components/Main'
+import { Main } from './components/Main'
 import Header from './components/Header'
 import { ThemeProvider } from "@/components/ThemeProvider"
 
@@ -8,7 +8,7 @@ function App() {
       <div className="min-h-screen">
         <Header />
         <main className="container mx-auto p-4 sm:p-8">
-          <From />
+          <Main />
         </main>
       </div>
     </ThemeProvider>

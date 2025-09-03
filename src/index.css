@@ -126,42 +126,24 @@
   .card-subtle {
     @apply shadow-md shadow-black/3 border border-border/40;
   }
-  
+
   .input-enhanced {
-    @apply border-2 border-border/60 focus:border-primary/60 focus:ring-2 focus:ring-primary/20;
+    @apply w-full h-10 px-3 bg-background border-2 border-border/60 focus:border-primary/60 focus:ring-2 focus:ring-primary/20;
   }
-  
-  /* 确保Button组件在浅色模式下与Input组件样式一致 */
-  .input-enhanced[data-variant="outline"] {
-    @apply bg-background text-foreground border-2 border-border/60 hover:bg-accent/50 hover:text-accent-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20;
-  }
-  
-  /* 统一所有input-enhanced样式的背景色和边框 */
-  .input-enhanced {
-    @apply bg-background border-2 border-border/60;
-  }
-  
-  /* 确保Button组件的outline变体在浅色模式下与Input组件完全一致 */
+
   .input-enhanced[data-variant="outline"],
   button.input-enhanced[data-variant="outline"] {
     @apply bg-background text-foreground border-2 border-border/60 hover:bg-accent/50 hover:text-accent-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20;
   }
-  
-  /* 确保Select组件在浅色模式下与Input组件样式一致 */
+
   .input-enhanced[data-slot="select-trigger"] {
     @apply bg-background border-2 border-border/60;
   }
-  
-  /* 确保所有input-enhanced组件在浅色模式下都有一致的背景色和边框 */
-  .input-enhanced {
-    @apply bg-background border-2 border-border/60;
-  }
-  
-  /* 覆盖任何可能的内联背景色设置 */
+
   .input-enhanced[style*="background"] {
     background-color: var(--background) !important;
   }
-  
+
   .badge-enhanced {
     @apply border border-border/60 shadow-sm shadow-black/2;
   }
