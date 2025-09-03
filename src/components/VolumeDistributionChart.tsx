@@ -37,28 +37,47 @@ export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributio
         if (!chartRef.current) return;
         const svg = chartRef.current.querySelector('svg');
         if (!svg) return;
+
+        const exportWidth = 1280;
+        const exportHeight = 720; // 16:9
+        const scale = Math.max(2, window.devicePixelRatio || 1);
+
+        const { width: svgWidth, height: svgHeight } = svg.getBoundingClientRect();
+        const clonedSvg = svg.cloneNode(true) as SVGSVGElement;
+        clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        clonedSvg.setAttribute('width', String(exportWidth));
+        clonedSvg.setAttribute('height', String(exportHeight));
+        clonedSvg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+
         const serializer = new XMLSerializer();
-        const svgData = serializer.serializeToString(svg);
+        const svgData = serializer.serializeToString(clonedSvg);
         const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const image = new Image();
-        const width = 1280;
-        const height = 720;
         image.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = exportWidth * scale;
+            canvas.height = exportHeight * scale;
             const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, width, height);
-                ctx.drawImage(image, 0, 0, width, height);
-                const link = document.createElement('a');
-                link.download = 'volume-distribution.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+            if (!ctx) {
+                URL.revokeObjectURL(url);
+                alert(t('chart.downloadFailed'));
+                return;
             }
+            ctx.scale(scale, scale);
+            const backgroundColor = getComputedStyle(chartRef.current!).backgroundColor || '#ffffff';
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, exportWidth, exportHeight);
+            ctx.drawImage(image, 0, 0, exportWidth, exportHeight);
+            const link = document.createElement('a');
+            link.download = 'volume-distribution.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
             URL.revokeObjectURL(url);
+        };
+        image.onerror = () => {
+            URL.revokeObjectURL(url);
+            alert(t('chart.downloadFailed'));
         };
         image.src = url;
     };
