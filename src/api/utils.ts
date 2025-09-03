@@ -5,13 +5,13 @@ const DEFAULT_TIMEOUT = 10000 // 10 seconds timeout
 export class ApiError extends Error {
   public status?: number
   public code?: string
-  public details?: any
+  public details?: unknown
   
   constructor(
     message: string,
     status?: number,
     code?: string,
-    details?: any
+    details?: unknown
   ) {
     super(message)
     this.name = 'ApiError'
@@ -22,7 +22,7 @@ export class ApiError extends Error {
 }
 
 // API response type
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: string

@@ -144,7 +144,7 @@ export function From() {
         <div className='container mx-auto px-4 pt-16 sm:pt-24 space-y-8'>
             <div className='bg-card card-elevated rounded-lg p-4 sm:p-6'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
                         <SelectTrigger className="w-full input-enhanced">
@@ -160,12 +160,12 @@ export function From() {
                     </Select>
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.market')}</label>
                     <MarketSelect selectedChain={selectedChain} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.underlyingAmount')}</label>
                     <Input
                         type="number"
@@ -177,7 +177,7 @@ export function From() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
                     <Input
                         type="number"
@@ -189,7 +189,7 @@ export function From() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2'>
+                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pendleMultiplier')}</label>
                     <Input
                         type="number"
@@ -206,7 +206,7 @@ export function From() {
                     <Button
                         onClick={updateChart}
                         disabled={!selectedMarket || isLoading}
-                        className="input-enhanced">
+                        className="w-full sm:w-auto input-enhanced">
                         {t('main.run')}
                     </Button>
                 </div>

@@ -1,5 +1,4 @@
 import { ApiError } from './utils'
-import type { RequestConfig } from './utils'
 
 
 // Transaction data type
@@ -37,7 +36,7 @@ export class PendleApiError extends ApiError {
     message: string,
     status?: number,
     code?: string,
-    details?: any
+    details?: unknown
   ) {
     super(message, status, code, details)
     this.name = 'PendleApiError'
@@ -45,15 +44,15 @@ export class PendleApiError extends ApiError {
 }
 
 // Helper function to fetch JSON data
-async function fetchJSON(url: string, params: Record<string, string>): Promise<any> {
+async function fetchJSON<T>(url: string, params: Record<string, string>): Promise<T> {
     const queryString = new URLSearchParams(params).toString();
     const fullUrl = queryString ? `${url}?${queryString}` : url;
-    
+
     const response = await fetch(fullUrl);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return response.json();
+    return response.json() as Promise<T>;
 }
 
 // Helper function to sleep
@@ -63,8 +62,7 @@ function sleep(ms: number): Promise<void> {
 
 // Get active markets
 export async function getActiveMarkets(
-  chainId: number,
-  _config?: RequestConfig
+  chainId: number
 ): Promise<Market[]> {
   try {
     const url = `${BASE_URL}/v1/${chainId}/markets/active`
@@ -99,7 +97,7 @@ export async function getTransactionsAll(
 
     
     const base = `${BASE_URL}/v4/${chainId}/transactions`;
-    let results: Transaction[] = [];
+    const results: Transaction[] = [];
     let skip = 0;
     let resumeToken: string | null = null;
     let pages = 0;
@@ -121,9 +119,9 @@ export async function getTransactionsAll(
             params.skip = String(skip);
         }
 
-        let data: any;
+        let data: { results?: Transaction[]; resumeToken?: string } | undefined;
         try {
-            data = await fetchJSON(base, params);
+            data = await fetchJSON<{ results?: Transaction[]; resumeToken?: string }>(base, params);
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : String(e);
             throw new Error(`Network error while fetching transactions: ${errorMessage}`);
