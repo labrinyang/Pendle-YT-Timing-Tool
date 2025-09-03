@@ -7,6 +7,7 @@ import {
     Tooltip,
     ResponsiveContainer,
     LabelList,
+    ReferenceLine,
 } from 'recharts';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,15 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
         );
     }
 
+    const totalVolume = data.reduce((sum, d) => sum + d.volume, 0);
+    const weightedApy = totalVolume
+        ? data.reduce((sum, d) => sum + d.impliedApy * d.volume, 0) / totalVolume
+        : 0;
+    const apyValues = data.map((d) => d.impliedApy);
+    const minApy = Math.min(...apyValues);
+    const maxApy = Math.max(...apyValues);
+    const binSize = data.length > 1 ? data[1].impliedApy - data[0].impliedApy : 1;
+
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
             <h3 className="text-lg font-semibold text-center mb-6 text-foreground">
@@ -51,11 +61,13 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                     <XAxis
                         dataKey="impliedApy"
+                        type="number"
+                        domain={[minApy - binSize / 2, maxApy + binSize / 2]}
                         stroke="#9ca3af"
                         fontSize={12}
                         tickLine={false}
                         tick={{ fill: '#9ca3af' }}
-                        tickFormatter={(value) => `${value}%`}
+                        tickFormatter={(value: number) => `${Number(value.toFixed(2))}%`}
                         label={{ value: t('chart.impliedApy'), position: 'insideBottom', offset: -10, fill: '#9ca3af' }}
                     />
                     <YAxis
@@ -89,7 +101,7 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
                             }),
                             t('chart.volume'),
                         ]}
-                        labelFormatter={(label) => `${label.toFixed(2)}%`}
+                        labelFormatter={(label) => `${Number(label.toFixed(2))}%`}
                     />
                     <Bar
                         dataKey="volume"
@@ -114,6 +126,19 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
                             }}
                         />
                     </Bar>
+                    <ReferenceLine
+                        x={weightedApy}
+                        stroke="#f59e0b"
+                        strokeDasharray="3 3"
+                        strokeWidth={2}
+                        label={{
+                            value: `${t('main.weightedImpliedAPYVolume')}: ${weightedApy.toFixed(2)}%`,
+                            position: 'top',
+                            fill: '#f59e0b',
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                        }}
+                    />
                 </BarChart>
             </ResponsiveContainer>
         </div>
