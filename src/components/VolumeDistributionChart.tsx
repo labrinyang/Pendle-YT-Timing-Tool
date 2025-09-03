@@ -10,7 +10,10 @@ import {
     ReferenceLine,
 } from 'recharts';
 import type { ReactNode } from 'react';
+import { useRef } from 'react';
+import { Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 import { useWindowSize } from '../hooks/use-window-size';
 
 export interface VolumeDistributionData {
@@ -20,13 +23,45 @@ export interface VolumeDistributionData {
 
 interface VolumeDistributionChartProps {
     data: VolumeDistributionData[];
+    weightedApy?: number; // percentage
 }
 
-export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) {
+export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributionChartProps) {
     const { t } = useTranslation();
     const { width } = useWindowSize();
     const isMobile = width < 640;
     const chartHeight = isMobile ? Math.min(300, Math.max(200, width * 0.6)) : 300;
+    const chartRef = useRef<HTMLDivElement>(null);
+
+    const downloadImage = () => {
+        if (!chartRef.current) return;
+        const svg = chartRef.current.querySelector('svg');
+        if (!svg) return;
+        const serializer = new XMLSerializer();
+        const svgData = serializer.serializeToString(svg);
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        const width = 1280;
+        const height = 720;
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(image, 0, 0, width, height);
+                const link = document.createElement('a');
+                link.download = 'volume-distribution.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            URL.revokeObjectURL(url);
+        };
+        image.src = url;
+    };
 
     if (!data || data.length === 0) {
         return (
@@ -37,9 +72,11 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
     }
 
     const totalVolume = data.reduce((sum, d) => sum + d.volume, 0);
-    const weightedApy = totalVolume
-        ? data.reduce((sum, d) => sum + d.impliedApy * d.volume, 0) / totalVolume
-        : 0;
+    const effectiveWeightedApy = weightedApy !== undefined
+        ? weightedApy
+        : totalVolume
+            ? data.reduce((sum, d) => sum + d.impliedApy * d.volume, 0) / totalVolume
+            : 0;
     const apyValues = data.map((d) => d.impliedApy);
     const minApy = Math.min(...apyValues);
     const maxApy = Math.max(...apyValues);
@@ -47,11 +84,23 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
 
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-center mb-6 text-foreground">
-                {t('chart.volumeDistributionTitle')}
-            </h3>
-            <ResponsiveContainer width="100%" height={chartHeight}>
-                <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <div className="relative mb-6">
+                <h3 className="text-lg font-semibold text-center text-foreground">
+                    {t('chart.volumeDistributionTitle')}
+                </h3>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute right-0 top-1/2 -translate-y-1/2"
+                    onClick={downloadImage}
+                >
+                    <Download className="h-4 w-4" />
+                    <span className="sr-only">{t('chart.downloadImage')}</span>
+                </Button>
+            </div>
+            <div ref={chartRef}>
+                <ResponsiveContainer width="100%" height={chartHeight}>
+                    <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <defs>
                         <linearGradient id="volumeGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#60a5fa" />
@@ -110,37 +159,40 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
                         radius={[4, 4, 0, 0]}
                         barSize={isMobile ? 20 : 40}
                     >
-                        <LabelList
-                            dataKey="volume"
-                            position="top"
-                            fill="#e5e7eb"
-                            fontSize={12}
-                            formatter={(value: ReactNode) => {
-                                const numValue = typeof value === 'number' ? value : Number(value);
-                                if (numValue >= 1000000) {
-                                    return `${(numValue / 1000000).toFixed(1)}M`;
-                                } else if (numValue >= 1000) {
-                                    return `${(numValue / 1000).toFixed(1)}K`;
-                                }
-                                return numValue.toString();
-                            }}
-                        />
+                        {!isMobile && (
+                            <LabelList
+                                dataKey="volume"
+                                position="top"
+                                fill="#e5e7eb"
+                                fontSize={12}
+                                formatter={(value: ReactNode) => {
+                                    const numValue = typeof value === 'number' ? value : Number(value);
+                                    if (numValue >= 1000000) {
+                                        return `${(numValue / 1000000).toFixed(1)}M`;
+                                    } else if (numValue >= 1000) {
+                                        return `${(numValue / 1000).toFixed(1)}K`;
+                                    }
+                                    return numValue.toString();
+                                }}
+                            />
+                        )}
                     </Bar>
                     <ReferenceLine
-                        x={weightedApy}
+                        x={effectiveWeightedApy}
                         stroke="#f59e0b"
                         strokeDasharray="3 3"
                         strokeWidth={2}
                         label={{
-                            value: `${t('main.weightedImpliedAPYVolume')}: ${weightedApy.toFixed(2)}%`,
+                            value: `${t('main.weightedImpliedAPYVolume')}: ${effectiveWeightedApy.toFixed(2)}%`,
                             position: 'top',
                             fill: '#f59e0b',
                             fontSize: 12,
                             fontWeight: 'bold',
                         }}
                     />
-                </BarChart>
-            </ResponsiveContainer>
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }

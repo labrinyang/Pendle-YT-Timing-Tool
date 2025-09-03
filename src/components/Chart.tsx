@@ -8,7 +8,10 @@ import {
     Legend,
     ResponsiveContainer
 } from 'recharts';
+import { useRef } from 'react';
+import { Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 import { useWindowSize } from '../hooks/use-window-size';
 
 export interface ChartData {
@@ -31,6 +34,37 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
     const { width } = useWindowSize();
     const isMobile = width < 640;
     const chartHeight = isMobile ? Math.min(400, Math.max(200, width * 0.8)) : 400;
+    const chartRef = useRef<HTMLDivElement>(null);
+
+    const downloadImage = () => {
+        if (!chartRef.current) return;
+        const svg = chartRef.current.querySelector('svg');
+        if (!svg) return;
+        const serializer = new XMLSerializer();
+        const svgData = serializer.serializeToString(svg);
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        const width = 1280;
+        const height = 720;
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(image, 0, 0, width, height);
+                const link = document.createElement('a');
+                link.download = 'chart.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            URL.revokeObjectURL(url);
+        };
+        image.src = url;
+    };
     
     if (!data || data.length === 0) {
         return (
@@ -45,12 +79,24 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
 
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-center mb-6 text-foreground">
-                {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
-            </h3>
-            
-            <ResponsiveContainer width="100%" height={chartHeight}>
-                <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <div className="relative mb-6">
+                <h3 className="text-lg font-semibold text-center text-foreground">
+                    {marketName} on {chainName} [{underlyingAmount} {t('chart.underlyingCoin')}] {maturityDate ? `- ${t('chart.maturity')} ${maturityDate.toLocaleString()}` : ''}
+                </h3>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute right-0 top-1/2 -translate-y-1/2"
+                    onClick={downloadImage}
+                >
+                    <Download className="h-4 w-4" />
+                    <span className="sr-only">{t('chart.downloadImage')}</span>
+                </Button>
+            </div>
+
+            <div ref={chartRef}>
+                <ResponsiveContainer width="100%" height={chartHeight}>
+                    <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
                     {/* X Axis - Time */}
@@ -174,10 +220,11 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                     />
                 </LineChart>
             </ResponsiveContainer>
-            
-            <div className="mt-4 text-sm text-muted-foreground text-center">
-                {t('chart.maximizePointsHint')}
-            </div>
         </div>
+
+        <div className="mt-4 text-sm text-muted-foreground text-center">
+            {t('chart.maximizePointsHint')}
+        </div>
+    </div>
     );
 }
