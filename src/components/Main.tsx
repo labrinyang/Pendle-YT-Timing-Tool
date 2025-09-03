@@ -287,7 +287,10 @@ export function From() {
             )}
             {volumeDistribution.length > 0 && (
                 <div className="mt-8">
-                    <VolumeDistributionChart data={volumeDistribution} />
+                    <VolumeDistributionChart
+                        data={volumeDistribution}
+                        weightedApy={(weightedImplied || 0) * 100}
+                    />
                 </div>
             )}
         </div>

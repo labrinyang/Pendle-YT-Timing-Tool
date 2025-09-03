@@ -20,9 +20,10 @@ export interface VolumeDistributionData {
 
 interface VolumeDistributionChartProps {
     data: VolumeDistributionData[];
+    weightedApy?: number; // percentage
 }
 
-export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) {
+export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributionChartProps) {
     const { t } = useTranslation();
     const { width } = useWindowSize();
     const isMobile = width < 640;
@@ -37,9 +38,11 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
     }
 
     const totalVolume = data.reduce((sum, d) => sum + d.volume, 0);
-    const weightedApy = totalVolume
-        ? data.reduce((sum, d) => sum + d.impliedApy * d.volume, 0) / totalVolume
-        : 0;
+    const effectiveWeightedApy = weightedApy !== undefined
+        ? weightedApy
+        : totalVolume
+            ? data.reduce((sum, d) => sum + d.impliedApy * d.volume, 0) / totalVolume
+            : 0;
     const apyValues = data.map((d) => d.impliedApy);
     const minApy = Math.min(...apyValues);
     const maxApy = Math.max(...apyValues);
@@ -127,12 +130,12 @@ export function VolumeDistributionChart({ data }: VolumeDistributionChartProps) 
                         />
                     </Bar>
                     <ReferenceLine
-                        x={weightedApy}
+                        x={effectiveWeightedApy}
                         stroke="#f59e0b"
                         strokeDasharray="3 3"
                         strokeWidth={2}
                         label={{
-                            value: `${t('main.weightedImpliedAPYVolume')}: ${weightedApy.toFixed(2)}%`,
+                            value: `${t('main.weightedImpliedAPYVolume')}: ${effectiveWeightedApy.toFixed(2)}%`,
                             position: 'top',
                             fill: '#f59e0b',
                             fontSize: 12,
