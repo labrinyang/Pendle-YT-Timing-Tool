@@ -1,3 +1,4 @@
+
 import { useState, useCallback, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
@@ -11,6 +12,7 @@ import {
 import { MarketSelect } from './MarketSelect';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import Container from './Container';
 
 import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
@@ -144,7 +146,7 @@ export function Main() {
     }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
     return (
-          <div className='mx-auto w-full max-w-screen-xl px-4 sm:px-6 pt-4 sm:pt-6 space-y-8'>
+          <Container className='pt-4 sm:pt-6 space-y-8'>
               {/* Align padding with header for consistent widths */}
               <div className='bg-card card-elevated rounded-xl p-4 sm:p-6 bg-gradient-to-br from-card to-card/80'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -294,6 +296,6 @@ export function Main() {
                     </Suspense>
                 </div>
             )}
-        </div>
+          </Container>
     );
 }

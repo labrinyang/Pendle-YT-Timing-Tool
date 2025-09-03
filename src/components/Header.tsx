@@ -14,6 +14,7 @@ import {
 } from './ui/dropdown-menu';
 import { Menu } from 'lucide-react';
 import { useTheme } from '@/hooks/theme-context';
+import Container from './Container';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -33,7 +34,7 @@ const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm">
       {/* Centered container to align with main content */}
-      <div className="mx-auto w-full max-w-screen-xl px-4 py-2 sm:px-6 sm:py-3">
+      <Container className="py-2 sm:py-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Left side - Title and badges */}
           <div className="flex items-center gap-4 min-w-0">
@@ -118,7 +119,7 @@ const Header: React.FC = () => {
             </DropdownMenu>
           </div>
         </div>
-      </div>
+      </Container>
     </header>
   );
 };
