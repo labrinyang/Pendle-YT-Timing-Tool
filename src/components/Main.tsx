@@ -18,7 +18,7 @@ import { compute } from '@/compute';
 import { Chart, type ChartData } from './Chart';
 import { VolumeDistributionChart, type VolumeDistributionData } from './VolumeDistributionChart';
 
-export function From() {
+export function Main() {
     const { t } = useTranslation();
     const [selectedChain, setSelectedChain] = useState<string>(chainsArray[0]?.chainId.toString() || "1");
     const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
