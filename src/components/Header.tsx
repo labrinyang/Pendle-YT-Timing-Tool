@@ -31,9 +31,9 @@ const Header: React.FC = () => {
   const nextLanguage = i18n.language === 'zh' ? 'en' : 'zh';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm">
       <div className="container mx-auto px-4 py-2 sm:px-6 sm:py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between">
           {/* Left side - Title and badges */}
           <div className="flex items-center space-x-4">
             {/* Pendle logo */}
@@ -53,7 +53,8 @@ const Header: React.FC = () => {
 
               {/* Badges */}
               <div className="flex items-center space-x-2 mt-1">
-                <span className="px-2 py-1 bg-muted badge-enhanced text-muted-foreground text-xs rounded-full">
+                {/* Hide badge on smaller screens to prevent overflow */}
+                <span className="hidden md:inline-flex px-2 py-1 bg-muted badge-enhanced text-muted-foreground text-xs rounded-full">
                   {t('header.secureBackend')}
                 </span>
               </div>
