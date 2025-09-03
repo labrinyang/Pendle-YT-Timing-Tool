@@ -30,7 +30,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
     const { t, i18n } = useTranslation();
     const { width } = useWindowSize();
     const isMobile = width < 640;
-    const chartHeight = isMobile ? Math.min(480, Math.max(320, width * 0.9)) : 400;
+    const chartHeight = isMobile ? Math.min(600, Math.max(360, width * 1.2)) : 400;
     
     if (!data || data.length === 0) {
         return (
@@ -61,7 +61,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                         stroke="#888888"
                         fontSize={12}
                         tick={{ fill: '#888888' }}
-                        tickFormatter={(value) => new Date(value).toLocaleString('en-US', {
+                        tickFormatter={(value) => new Date(Number(value)).toLocaleString(i18n.language, {
                             month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
@@ -109,7 +109,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
                             color: '#ffffff'
                         }}
                         labelStyle={{ color: '#ffffff' }}
-                        labelFormatter={(value) => new Date(value).toLocaleString()}
+                        labelFormatter={(value) => new Date(Number(value)).toLocaleString(i18n.language)}
                         formatter={(value: number, name: string) => {
                             if (name === t('chart.yAxisRight')) {
                                 if (!isFinite(value)) {
