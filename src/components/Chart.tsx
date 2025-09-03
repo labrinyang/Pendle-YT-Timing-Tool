@@ -30,7 +30,7 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
     const { t, i18n } = useTranslation();
     const { width } = useWindowSize();
     const isMobile = width < 640;
-    const chartHeight = isMobile ? Math.min(600, Math.max(360, width * 1.2)) : 400;
+    const chartHeight = isMobile ? Math.min(400, Math.max(200, width * 0.8)) : 400;
     
     if (!data || data.length === 0) {
         return (

@@ -15,6 +15,7 @@ import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
 import { compute } from '@/compute';
 import { Chart, type ChartData } from './Chart';
+import { VolumeDistributionChart, type VolumeDistributionData } from './VolumeDistributionChart';
 
 export function From() {
     const { t } = useTranslation();
@@ -28,6 +29,7 @@ export function From() {
     const [weightedImplied, setWeightedImplied] = useState<number>(0);
     const [pointsAvailable, setPointsAvailable] = useState<number>(0);
     const [maturityDate, setMaturityDate] = useState<Date | null>(null);
+    const [volumeDistribution, setVolumeDistribution] = useState<VolumeDistributionData[]>([]);
 
     const handleChainChange = (value: string) => {
         setSelectedChain(value);
@@ -44,6 +46,19 @@ export function From() {
         try {
             const txs = await getTransactionsAll(selectedChain, selectedMarket.address.toString());
 
+            const volumeMap = new Map<number, number>();
+            for (const tx of txs) {
+                const apy = Number(tx?.impliedApy);
+                const vol = Number(tx?.valuation?.usd ?? tx?.valuation_usd);
+                if (isFinite(apy) && isFinite(vol)) {
+                    const key = Math.round(apy * 100) / 100;
+                    volumeMap.set(key, (volumeMap.get(key) ?? 0) + vol);
+                }
+            }
+            const distData = Array.from(volumeMap.entries())
+                .sort((a, b) => a[0] - b[0])
+                .map(([apy, vol]) => ({ impliedApy: apy * 100, volume: vol }));
+            setVolumeDistribution(distData);
 
             const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: computedMaturity } = compute({
 
@@ -249,6 +264,11 @@ export function From() {
                         chainName={chainsArray.find(chain => chain.chainId.toString() === selectedChain)?.name || t('common.unknown')}
                         maturityDate={maturityDate ?? undefined}
                     />
+                </div>
+            )}
+            {volumeDistribution.length > 0 && (
+                <div className="mt-8">
+                    <VolumeDistributionChart data={volumeDistribution} />
                 </div>
             )}
         </div>

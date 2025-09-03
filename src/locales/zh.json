@@ -19,7 +19,10 @@
     "fairValueCurve": "YT 公平价值曲线",
     "underlyingCoin": "底层代币",
     "maximizePointsHint": "在 YT 价格低于公平价值曲线时购买以最大化积分",
-    "maturity": "到期时间："
+    "maturity": "到期时间：",
+    "volumeDistributionTitle": "不同隐含年化收益率的成交量分布",
+    "impliedApy": "隐含年化收益率 (%)",
+    "volume": "成交量 (USD)"
   },
   "main": {
     "chain": "链",
