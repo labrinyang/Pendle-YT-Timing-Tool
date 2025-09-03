@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chainsArray } from '../constant/chain';
 import {
@@ -15,8 +15,11 @@ import { Button } from './ui/button';
 import { getTransactionsAll } from '@/api/pendle';
 import type { Market } from '@/api/pendle';
 import { compute } from '@/compute';
-import { Chart, type ChartData } from './Chart';
-import { VolumeDistributionChart, type VolumeDistributionData } from './VolumeDistributionChart';
+import type { ChartData } from './Chart';
+import type { VolumeDistributionData } from './VolumeDistributionChart';
+
+const Chart = lazy(async () => ({ default: (await import('./Chart')).Chart }));
+const VolumeDistributionChart = lazy(async () => ({ default: (await import('./VolumeDistributionChart')).VolumeDistributionChart }));
 
 export function Main() {
     const { t } = useTranslation();
@@ -203,11 +206,12 @@ export function Main() {
                 </div>
 
                 </div>
-                <div className="mt-4 flex justify-end">
+                {/* Align run button with input fields */}
+                <div className="mt-4 flex justify-start">
                     <Button
                         onClick={updateChart}
                         disabled={!selectedMarket || isLoading}
-                        className="w-full sm:w-auto input-enhanced">
+                        className="input-enhanced w-auto">
                         {t('main.run')}
                     </Button>
                 </div>
@@ -269,21 +273,25 @@ export function Main() {
             {/* Chart Display */}
             {chartData.length > 0 && selectedMarket && (
                 <div className="mt-8">
-                    <Chart
-                        data={chartData}
-                        marketName={selectedMarket.name}
-                        underlyingAmount={underlyingAmount}
-                        chainName={chainsArray.find(chain => chain.chainId.toString() === selectedChain)?.name || t('common.unknown')}
-                        maturityDate={maturityDate ?? undefined}
-                    />
+                    <Suspense fallback={<div className="flex items-center justify-center h-64 text-muted-foreground">Loading chart...</div>}>
+                        <Chart
+                            data={chartData}
+                            marketName={selectedMarket.name}
+                            underlyingAmount={underlyingAmount}
+                            chainName={chainsArray.find(chain => chain.chainId.toString() === selectedChain)?.name || t('common.unknown')}
+                            maturityDate={maturityDate ?? undefined}
+                        />
+                    </Suspense>
                 </div>
             )}
             {volumeDistribution.length > 0 && (
                 <div className="mt-8">
-                    <VolumeDistributionChart
-                        data={volumeDistribution}
-                        weightedApy={(weightedImplied || 0) * 100}
-                    />
+                    <Suspense fallback={<div className="flex items-center justify-center h-64 text-muted-foreground">Loading chart...</div>}>
+                        <VolumeDistributionChart
+                            data={volumeDistribution}
+                            weightedApy={(weightedImplied || 0) * 100}
+                        />
+                    </Suspense>
                 </div>
             )}
         </div>
