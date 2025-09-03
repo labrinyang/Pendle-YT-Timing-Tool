@@ -23,7 +23,8 @@
         "volumeDistributionTitle": "不同隐含年化收益率的成交量分布",
         "impliedApy": "隐含年化收益率 (%)",
         "volume": "成交量 (USD)",
-        "downloadImage": "下载图片"
+        "downloadImage": "下载图片",
+        "downloadFailed": "下载图片失败"
     },
   "main": {
     "chain": "链",
