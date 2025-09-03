@@ -32,10 +32,10 @@ const Header: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-gradient-to-r from-background/90 to-background/60 backdrop-blur shadow-sm">
-      <div className="container mx-auto px-4 py-2 sm:px-6 sm:py-4">
-        <div className="flex flex-wrap items-center justify-between">
+      <div className="container mx-auto max-w-4xl px-4 py-2 sm:px-6 sm:py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Left side - Title and badges */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-4">
             {/* Pendle logo */}
             <div className="w-12 h-12 rounded-full overflow-hidden">
               <img
@@ -62,8 +62,8 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right side - Action buttons */}
-          <div className="flex items-center space-x-4">
-            <div className="hidden sm:flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-2 sm:gap-4">
               {/* GitHub button */}
               <Button
                 variant="outline"
