@@ -141,11 +141,11 @@ export function Main() {
     }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
 
     return (
-          <div className='mx-auto max-w-screen-xl px-4 sm:px-6 pt-6 sm:pt-8 space-y-10'>
+          <div className='mx-auto w-full max-w-screen-xl px-4 sm:px-6 pt-4 sm:pt-6 space-y-8'>
               {/* Align padding with header for consistent widths */}
               <div className='bg-card card-elevated rounded-xl p-4 sm:p-6 bg-gradient-to-br from-card to-card/80'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
+                <div className='flex flex-col space-y-2 w-full'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.chain')}</label>
                     <Select value={selectedChain} onValueChange={handleChainChange}>
                         <SelectTrigger className="w-full input-enhanced">
@@ -161,12 +161,12 @@ export function Main() {
                     </Select>
                 </div>
 
-                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
+                <div className='flex flex-col space-y-2 w-full'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.market')}</label>
                     <MarketSelect selectedChain={selectedChain} selectedMarket={selectedMarket} setSelectedMarket={setSelectedMarket} />
                 </div>
 
-                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
+                <div className='flex flex-col space-y-2 w-full'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.underlyingAmount')}</label>
                     <Input
                         type="number"
@@ -178,7 +178,7 @@ export function Main() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
+                <div className='flex flex-col space-y-2 w-full'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
                     <Input
                         type="number"
@@ -190,7 +190,7 @@ export function Main() {
                     />
                 </div>
 
-                <div className='flex flex-col space-y-2 w-full sm:max-w-xs'>
+                <div className='flex flex-col space-y-2 w-full'>
                     <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pendleMultiplier')}</label>
                     <Input
                         type="number"
