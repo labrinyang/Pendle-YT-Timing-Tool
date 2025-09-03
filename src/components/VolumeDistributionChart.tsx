@@ -10,10 +10,7 @@ import {
     ReferenceLine,
 } from 'recharts';
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
-import { Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
 import { useWindowSize } from '../hooks/use-window-size';
 
 export interface VolumeDistributionData {
@@ -31,56 +28,6 @@ export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributio
     const { width } = useWindowSize();
     const isMobile = width < 640;
     const chartHeight = isMobile ? Math.min(300, Math.max(200, width * 0.6)) : 300;
-    const chartRef = useRef<HTMLDivElement>(null);
-
-    const downloadImage = () => {
-        if (!chartRef.current) return;
-        const svg = chartRef.current.querySelector('svg');
-        if (!svg) return;
-
-        const exportWidth = 1280;
-        const exportHeight = 720; // 16:9
-        const scale = Math.max(2, window.devicePixelRatio || 1);
-
-        const { width: svgWidth, height: svgHeight } = svg.getBoundingClientRect();
-        const clonedSvg = svg.cloneNode(true) as SVGSVGElement;
-        clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        clonedSvg.setAttribute('width', String(exportWidth));
-        clonedSvg.setAttribute('height', String(exportHeight));
-        clonedSvg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-
-        const serializer = new XMLSerializer();
-        const svgData = serializer.serializeToString(clonedSvg);
-        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const image = new Image();
-        image.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = exportWidth * scale;
-            canvas.height = exportHeight * scale;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                URL.revokeObjectURL(url);
-                alert(t('chart.downloadFailed'));
-                return;
-            }
-            ctx.scale(scale, scale);
-            const backgroundColor = getComputedStyle(chartRef.current!).backgroundColor || '#ffffff';
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, exportWidth, exportHeight);
-            ctx.drawImage(image, 0, 0, exportWidth, exportHeight);
-            const link = document.createElement('a');
-            link.download = 'volume-distribution.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            URL.revokeObjectURL(url);
-        };
-        image.onerror = () => {
-            URL.revokeObjectURL(url);
-            alert(t('chart.downloadFailed'));
-        };
-        image.src = url;
-    };
 
     if (!data || data.length === 0) {
         return (
@@ -103,21 +50,10 @@ export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributio
 
     return (
         <div className="w-full bg-card card-elevated rounded-lg p-6">
-            <div className="relative mb-6">
-                <h3 className="text-lg font-semibold text-center text-foreground">
-                    {t('chart.volumeDistributionTitle')}
-                </h3>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute right-0 top-1/2 -translate-y-1/2"
-                    onClick={downloadImage}
-                >
-                    <Download className="h-4 w-4" />
-                    <span className="sr-only">{t('chart.downloadImage')}</span>
-                </Button>
-            </div>
-            <div ref={chartRef}>
+            <h3 className="mb-6 text-lg font-semibold text-center text-foreground">
+                {t('chart.volumeDistributionTitle')}
+            </h3>
+            <div>
                 <ResponsiveContainer width="100%" height={chartHeight}>
                     <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <defs>

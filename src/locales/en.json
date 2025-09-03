@@ -22,9 +22,7 @@
         "maturity": "Maturity:",
         "volumeDistributionTitle": "Volume distribution by implied APY",
         "impliedApy": "Implied APY (%)",
-        "volume": "Volume (USD)",
-        "downloadImage": "Download image",
-        "downloadFailed": "Failed to download image"
+        "volume": "Volume (USD)"
     },
   "main": {
     "chain": "Chain",
