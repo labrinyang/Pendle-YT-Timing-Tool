@@ -55,7 +55,11 @@ export function VolumeDistributionChart({ data, weightedApy }: VolumeDistributio
             </h3>
             <div>
                 <ResponsiveContainer width="100%" height={chartHeight}>
-                    <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <BarChart
+                        data={data}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                        style={{ background: 'var(--card)' }}
+                    >
                     <defs>
                         <linearGradient id="volumeGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#60a5fa" />

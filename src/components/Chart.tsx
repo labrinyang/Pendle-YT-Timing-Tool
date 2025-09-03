@@ -51,7 +51,12 @@ export function Chart({ data, marketName, underlyingAmount, chainName, maturityD
 
             <div>
                 <ResponsiveContainer width="100%" height={chartHeight}>
-                    <LineChart key={i18n.language} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <LineChart
+                        key={i18n.language}
+                        data={chartData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                        style={{ background: 'var(--card)' }}
+                    >
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     
                     {/* X Axis - Time */}
