@@ -29,7 +29,7 @@
     "market": "市场",
     "underlyingAmount": "底层代币数量",
     "pointsPerDay": "积分/天",
-    "pointsRate": "积分速率",
+    "pointsRate": "每个底层资产获得的积分数量",
     "perHour": "每小时",
     "perDay": "每天",
     "perWeek": "每周",

@@ -29,7 +29,7 @@
     "market": "Market",
     "underlyingAmount": "Underlying Amount",
     "pointsPerDay": "Points/Day",
-    "pointsRate": "Points rate",
+    "pointsRate": "Points per Underlying Asset",
     "perHour": "per hour",
     "perDay": "per day",
     "perWeek": "per week",
