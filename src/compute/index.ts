@@ -11,7 +11,8 @@ interface ComputeProps {
     transactions: Transaction[];
     maturity: Date | string;
     underlyingAmount: number;
-    pointsPerDayPerUnderlying: number;
+    pointsPerPeriodPerUnderlying: number;
+    pointsPeriod: 'hour' | 'day' | 'week';
     multiplier: number;
 }
 
@@ -23,7 +24,7 @@ interface ComputeResult {
     maturityDate: Date;
 }
 
-function compute({transactions, maturity, underlyingAmount, pointsPerDayPerUnderlying, multiplier}: ComputeProps): ComputeResult {
+function compute({transactions, maturity, underlyingAmount, pointsPerPeriodPerUnderlying, pointsPeriod, multiplier}: ComputeProps): ComputeResult {
     const tTimes: Date[] = [];
     const implied: number[] = [];
     const valuationUSD: number[] = [];
@@ -48,7 +49,8 @@ function compute({transactions, maturity, underlyingAmount, pointsPerDayPerUnder
     const maturityDate = new Date(maturity);
     const hoursToMaturity = tTimes.map(t => (maturityDate.getTime() - t.getTime()) / 3600000);
 
-    const pph = pointsPerDayPerUnderlying / 24;
+    const periodHours = pointsPeriod === 'hour' ? 1 : pointsPeriod === 'day' ? 24 : 168;
+    const pph = pointsPerPeriodPerUnderlying / periodHours;
     const mult = multiplier;
     const ytPrice: number[] = [];
     const points: number[] = [];

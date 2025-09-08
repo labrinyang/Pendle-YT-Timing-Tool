@@ -28,7 +28,8 @@ export function Main() {
     const [selectedChain, setSelectedChain] = useState<string>(chainsArray[0]?.chainId.toString() || "1");
     const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
     const [underlyingAmount, setUnderlyingAmount] = useState<number>(1500);
-    const [pointsPerDay, setPointsPerDay] = useState<number>(1);
+    const [pointsRate, setPointsRate] = useState<number>(1);
+    const [pointsPeriod, setPointsPeriod] = useState<'hour' | 'day' | 'week'>('day');
     const [pendleMultiplier, setPendleMultiplier] = useState<number>(36);
     const [chartData, setChartData] = useState<ChartData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -86,11 +87,11 @@ export function Main() {
             }
 
             const { tTimes, ytPrice, points, weightedImplied: computedWeightedImplied, maturityDate: computedMaturity } = compute({
-
                 transactions: txs,
                 maturity: selectedMarket.expiry,
                 underlyingAmount,
-                pointsPerDayPerUnderlying: pointsPerDay,
+                pointsPerPeriodPerUnderlying: pointsRate,
+                pointsPeriod,
                 multiplier: pendleMultiplier
             });
 
@@ -143,7 +144,7 @@ export function Main() {
         } finally {
             setIsLoading(false);
         }
-    }, [selectedMarket, selectedChain, underlyingAmount, pointsPerDay, pendleMultiplier]);
+    }, [selectedMarket, selectedChain, underlyingAmount, pointsRate, pointsPeriod, pendleMultiplier]);
 
     return (
           <Container className='pt-4 sm:pt-6 space-y-8'>
@@ -184,15 +185,27 @@ export function Main() {
                 </div>
 
                 <div className='flex flex-col space-y-2 w-full'>
-                    <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsPerDay')}</label>
-                    <Input
-                        type="number"
-                        value={pointsPerDay}
-                        onChange={(e) => setPointsPerDay(Number(e.target.value))}
-                        placeholder="1"
-                        className="w-full input-enhanced"
-                        min="0"
-                    />
+                    <label className='text-sm font-medium text-muted-foreground whitespace-nowrap'>{t('main.pointsRate')}</label>
+                    <div className='flex space-x-2'>
+                        <Input
+                            type="number"
+                            value={pointsRate}
+                            onChange={(e) => setPointsRate(Number(e.target.value))}
+                            placeholder="1"
+                            className="w-full input-enhanced"
+                            min="0"
+                        />
+                        <Select value={pointsPeriod} onValueChange={(value) => setPointsPeriod(value as 'hour' | 'day' | 'week')}>
+                            <SelectTrigger className="w-[110px] input-enhanced">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="hour">{t('main.perHour')}</SelectItem>
+                                <SelectItem value="day">{t('main.perDay')}</SelectItem>
+                                <SelectItem value="week">{t('main.perWeek')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 <div className='flex flex-col space-y-2 w-full'>
