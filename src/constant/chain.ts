@@ -42,6 +42,12 @@ export const chains: { [chainId: number]: Chain } = {
         rpcUrl: 'https://mainnet.base.org',
         explorerUrl: 'https://basescan.org',
     },
+    9745: {
+        name: 'Plasma',
+        chainId: 9745,
+        rpcUrl: '',
+        explorerUrl: '',
+    },
     999: {
         name: 'Hyper EVM',
         chainId: 999,
