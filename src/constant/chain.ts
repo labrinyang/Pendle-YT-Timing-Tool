@@ -45,8 +45,8 @@ export const chains: { [chainId: number]: Chain } = {
     9745: {
         name: 'Plasma',
         chainId: 9745,
-        rpcUrl: '',
-        explorerUrl: '',
+        rpcUrl: 'https://rpc.plasma.to',
+        explorerUrl: 'https://plasmascan.to',
     },
     999: {
         name: 'Hyper EVM',
